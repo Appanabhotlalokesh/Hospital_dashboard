@@ -1,0 +1,237 @@
+{% extends "base.html" %}
+
+{% block title %}Available Time Slots{% endblock %}
+
+{% block content %}
+<style>
+    .slots-container {
+        max-width: 1000px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .page-header {
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #e0e0e0;
+    }
+
+    .page-header h1 {
+        font-size: 32px;
+        color: #2c5364;
+        margin-bottom: 10px;
+    }
+
+    .doctor-info {
+        background: linear-gradient(135deg, #0f2027, #2c5364);
+        color: white;
+        padding: 25px;
+        border-radius: 12px;
+        margin-bottom: 30px;
+    }
+
+    .doctor-info h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+    }
+
+    .doctor-details {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+        margin-top: 15px;
+    }
+
+    .detail-item {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px 15px;
+        border-radius: 8px;
+    }
+
+    .detail-label {
+        font-size: 12px;
+        opacity: 0.9;
+    }
+
+    .detail-value {
+        font-size: 16px;
+        font-weight: 600;
+        margin-top: 5px;
+    }
+
+    .slots-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .slot-card {
+        background: white;
+        border: 2px solid #e0e0e0;
+        border-radius: 12px;
+        padding: 20px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+
+    .slot-card:hover {
+        border-color: #0072ff;
+        box-shadow: 0 5px 20px rgba(0, 114, 255, 0.2);
+        transform: translateY(-3px);
+    }
+
+    .slot-card.booked {
+        background: #f5f5f5;
+        border-color: #ccc;
+        cursor: not-allowed;
+        opacity: 0.6;
+        pointer-events: none;
+    }
+
+    .slot-date {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c5364;
+        margin-bottom: 10px;
+    }
+
+    .slot-day {
+        font-size: 12px;
+        color: #999;
+        margin-bottom: 10px;
+    }
+
+    .slot-time {
+        font-size: 24px;
+        font-weight: bold;
+        color: #0072ff;
+        margin: 15px 0;
+    }
+
+    .slot-duration {
+        font-size: 12px;
+        color: #666;
+        margin-bottom: 15px;
+    }
+
+    .book-btn {
+        width: 100%;
+        padding: 12px;
+        background: #0072ff;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 14px;
+        transition: background 0.3s;
+    }
+
+    .book-btn:hover {
+        background: #0059cc;
+    }
+
+    .slot-badge {
+        display: inline-block;
+        background: #d4edda;
+        color: #155724;
+        padding: 4px 8px;
+        border-radius: 20px;
+        font-size: 11px;
+        font-weight: 600;
+        margin-top: 10px;
+    }
+
+    .slot-badge.booked {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .no-slots {
+        text-align: center;
+        padding: 60px 20px;
+        color: #999;
+    }
+
+    .no-slots h2 {
+        font-size: 24px;
+        margin-bottom: 10px;
+        color: #666;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #0072ff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="slots-container">
+    <a href="{% url 'view_doctors' %}" class="back-link">← Back to Doctors</a>
+
+    <div class="page-header">
+        <h1>📅 Available Time Slots</h1>
+        <p>Select a time slot to book your appointment</p>
+    </div>
+
+    <div class="doctor-info">
+        <h2>Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}</h2>
+        <div class="doctor-details">
+            <div class="detail-item">
+                <div class="detail-label">Specialization</div>
+                <div class="detail-value">{{ doctor.specialization }}</div>
+            </div>
+            {% if doctor.experience_years %}
+            <div class="detail-item">
+                <div class="detail-label">Experience</div>
+                <div class="detail-value">{{ doctor.experience_years }}+ Years</div>
+            </div>
+            {% endif %}
+            {% if doctor.phone %}
+            <div class="detail-item">
+                <div class="detail-label">Contact</div>
+                <div class="detail-value">{{ doctor.phone }}</div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+
+    {% if available_slots %}
+        <div class="slots-grid">
+            {% for slot in available_slots %}
+            <form method="POST" action="{% url 'book_appointment' slot.id %}" class="slot-form">
+                {% csrf_token %}
+                <div class="slot-card {% if slot.id in patient_booked_slots %}booked{% endif %}">
+                    <div class="slot-date">{{ slot.date|date:"M d, Y" }}</div>
+                    <div class="slot-day">{{ slot.date|date:"l" }}</div>
+                    <div class="slot-time">{{ slot.start_time|time:"H:i" }}</div>
+                    <div class="slot-duration">Duration: {{ slot.duration_minutes }} minutes</div>
+                    
+                    {% if slot.id in patient_booked_slots %}
+                        <span class="slot-badge booked">Already Booked by You</span>
+                    {% else %}
+                        <span class="slot-badge">Available</span>
+                        <button type="submit" class="book-btn" onclick="return confirm('Confirm booking this time slot?');">Book Now</button>
+                    {% endif %}
+                </div>
+            </form>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="no-slots">
+            <h2>No Available Slots</h2>
+            <p>Dr. {{ doctor.user.first_name }} doesn't have any available time slots at the moment.</p>
+            <br>
+            <a href="{% url 'view_doctors' %}" class="back-link">Browse Other Doctors</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

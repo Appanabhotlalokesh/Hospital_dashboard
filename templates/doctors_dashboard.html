@@ -1,0 +1,424 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    :root {
+        --primary-color: #0072ff;
+        --secondary-color: #2c5364;
+        --success-color: #28a745;
+        --danger-color: #dc3545;
+        --warning-color: #ffc107;
+        --light-bg: #f4f7fb;
+    }
+
+    .dashboard-container {
+        max-width: 1400px;
+        margin: 0 auto;
+    }
+
+    .dashboard-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+        flex-wrap: wrap;
+        gap: 20px;
+    }
+
+    .dashboard-header h1 {
+        color: #2c5364;
+        font-size: 32px;
+        margin: 0;
+    }
+
+    .dashboard-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .btn {
+        padding: 10px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        text-decoration: none;
+        transition: all 0.3s ease;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .btn-primary {
+        background: linear-gradient(135deg, var(--primary-color), #0050cc);
+        color: white;
+    }
+
+    .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(0, 114, 255, 0.2);
+    }
+
+    .btn-secondary {
+        background: var(--secondary-color);
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #1e3f4f;
+    }
+
+    .btn-sm {
+        padding: 6px 12px;
+        font-size: 13px;
+    }
+
+    .btn-edit {
+        background: #17a2b8;
+        color: white;
+    }
+
+    .btn-delete {
+        background: var(--danger-color);
+        color: white;
+    }
+
+    .profile-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        margin-bottom: 30px;
+    }
+
+    .profile-info {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 15px;
+    }
+
+    .info-item {
+        display: flex;
+        flex-direction: column;
+    }
+
+    .info-label {
+        font-size: 12px;
+        color: #999;
+        font-weight: 600;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+    }
+
+    .info-value {
+        font-size: 16px;
+        color: #333;
+        font-weight: 500;
+    }
+
+    .status-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px;
+        font-weight: 600;
+        width: fit-content;
+    }
+
+    .badge-available {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .badge-unavailable {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .section-title {
+        font-size: 22px;
+        color: #2c5364;
+        font-weight: 600;
+        margin: 30px 0 20px 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .slots-grid {
+        display: grid;
+        gap: 15px;
+    }
+
+    .slot-card {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        border-left: 5px solid var(--primary-color);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 15px;
+    }
+
+    .slot-info {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .slot-date {
+        font-size: 14px;
+        color: #999;
+        font-weight: 500;
+        margin-bottom: 5px;
+    }
+
+    .slot-time {
+        font-size: 18px;
+        font-weight: 600;
+        color: #2c5364;
+    }
+
+    .slot-details {
+        display: flex;
+        gap: 15px;
+        margin-top: 10px;
+        flex-wrap: wrap;
+    }
+
+    .detail-item {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 13px;
+        color: #666;
+    }
+
+    .slot-actions {
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+    }
+
+    .toggle-availability {
+        padding: 8px 14px;
+        border: 2px solid var(--primary-color);
+        background: white;
+        color: var(--primary-color);
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 12px;
+        transition: all 0.3s ease;
+    }
+
+    .toggle-availability:hover {
+        background: var(--primary-color);
+        color: white;
+    }
+
+    .toggle-availability.unavailable {
+        border-color: var(--warning-color);
+        color: var(--warning-color);
+    }
+
+    .toggle-availability.unavailable:hover {
+        background: var(--warning-color);
+        color: white;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: #999;
+    }
+
+    .empty-state-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.5;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 15px;
+        margin-bottom: 30px;
+    }
+
+    .stat-box {
+        background: white;
+        padding: 20px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+    }
+
+    .stat-number {
+        font-size: 28px;
+        font-weight: 700;
+        color: var(--primary-color);
+    }
+
+    .stat-label {
+        font-size: 12px;
+        color: #999;
+        margin-top: 8px;
+        text-transform: uppercase;
+    }
+
+    .alert {
+        padding: 15px 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .alert-success {
+        background: #d4edda;
+        color: #155724;
+        border: 1px solid #c3e6cb;
+    }
+
+    .alert-error {
+        background: #f8d7da;
+        color: #721c24;
+        border: 1px solid #f5c6cb;
+    }
+
+    @media (max-width: 768px) {
+        .dashboard-header {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .slot-card {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .slot-actions {
+            width: 100%;
+        }
+
+        .btn-sm {
+            flex: 1;
+        }
+
+        .stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="dashboard-container">
+    <!-- Header Section -->
+    <div class="dashboard-header">
+        <div>
+            <h1>👨‍⚕️ Doctor Dashboard</h1>
+            <p style="margin: 5px 0 0 0; color: #999; font-size: 14px;">Welcome back, Dr. {{ request.user.first_name }} {{ request.user.last_name }}</p>
+        </div>
+        <div class="dashboard-actions">
+            <a href="{% url 'doctor_profile' %}" class="btn btn-secondary">Edit Profile</a>
+            <a href="{% url 'add_time_slot' %}" class="btn btn-primary">+ Add Time Slot</a>
+        </div>
+    </div>
+
+    <!-- Messages -->
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{% if message.tags %}{{ message.tags }}{% else %}success{% endif %}">
+                <span>{{ message }}</span>
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <!-- Profile Card -->
+    <div class="profile-card">
+        <div class="profile-info">
+            <div class="info-item">
+                <div class="info-label">Specialization</div>
+                <div class="info-value">{{ doctor.specialization|default:"Not specified" }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Experience</div>
+                <div class="info-value">{{ doctor.experience_years }} years</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Phone</div>
+                <div class="info-value">{{ doctor.phone|default:"Not specified" }}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Availability Status</div>
+                <div class="status-badge {% if doctor.is_available %}badge-available{% else %}badge-unavailable{% endif %}">
+                    {% if doctor.is_available %}✓ Available{% else %}✗ Unavailable{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Statistics -->
+    <div class="stats-grid">
+        <div class="stat-box">
+            <div class="stat-number">{{ slots.count }}</div>
+            <div class="stat-label">Total Slots</div>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ slots|dictsort:"is_available"|length }}</div>
+            <div class="stat-label">Available Slots</div>
+        </div>
+    </div>
+
+    <!-- Time Slots Section -->
+    <div class="section-title">📅 Your Time Slots</div>
+
+    {% if slots %}
+        <div class="slots-grid">
+            {% for slot in slots %}
+                <div class="slot-card">
+                    <div class="slot-info">
+                        <div class="slot-date">📆 {{ slot.date|date:"l, F j, Y" }}</div>
+                        <div class="slot-time">⏰ {{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}</div>
+                        <div class="slot-details">
+                            <div class="detail-item">
+                                <span>⏱️ Duration:</span>
+                                <span>{{ slot.duration_minutes }} min</span>
+                            </div>
+                            <div class="detail-item">
+                                <span>Status:</span>
+                                <span class="status-badge {% if slot.is_available %}badge-available{% else %}badge-unavailable{% endif %}">
+                                    {% if slot.is_available %}Available{% else %}Unavailable{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="slot-actions">
+                        <form method="POST" action="{% url 'toggle_availability' slot.id %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="toggle-availability {% if not slot.is_available %}unavailable{% endif %}">
+                                {% if slot.is_available %}Mark Unavailable{% else %}Mark Available{% endif %}
+                            </button>
+                        </form>
+                        <a href="{% url 'edit_time_slot' slot.id %}" class="btn btn-sm btn-edit">Edit</a>
+                        <a href="{% url 'delete_time_slot' slot.id %}" class="btn btn-sm btn-delete">Delete</a>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="slot-card">
+            <div class="empty-state">
+                <div class="empty-state-icon">📅</div>
+                <h3>No time slots yet</h3>
+                <p>You haven't created any time slots. <a href="{% url 'add_time_slot' %}" style="color: var(--primary-color); font-weight: 600;">Create your first slot</a></p>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

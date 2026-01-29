@@ -1,0 +1,214 @@
+{% extends "base.html" %}
+
+{% block title %}Cancel Appointment{% endblock %}
+
+{% block content %}
+<style>
+    .cancel-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #0072ff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .page-header h1 {
+        font-size: 28px;
+        color: #2c5364;
+        margin-bottom: 10px;
+    }
+
+    .confirmation-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        margin-bottom: 20px;
+    }
+
+    .warning-icon {
+        font-size: 48px;
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .section {
+        margin-bottom: 30px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .section-title {
+        font-size: 14px;
+        color: #999;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .info-label {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .info-value {
+        color: #2c5364;
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .doctor-name {
+        font-size: 20px;
+        font-weight: 600;
+        color: #2c5364;
+        margin-bottom: 15px;
+    }
+
+    .warning-box {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        color: #856404;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .danger-box {
+        background: #f8d7da;
+        border: 1px solid #f5c6cb;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        color: #721c24;
+        font-size: 14px;
+        line-height: 1.6;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+    }
+
+    .btn-danger {
+        background: #ff4444;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #cc0000;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 68, 68, 0.3);
+    }
+
+    .btn-secondary {
+        background: #e0e0e0;
+        color: #666;
+    }
+
+    .btn-secondary:hover {
+        background: #d0d0d0;
+    }
+</style>
+
+<div class="cancel-container">
+    <a href="{% url 'patient_dashboard' %}" class="back-link">← Back to Dashboard</a>
+
+    <div class="page-header">
+        <div class="warning-icon">⚠️</div>
+        <h1>Cancel Appointment</h1>
+        <p>Are you sure you want to cancel this appointment?</p>
+    </div>
+
+    <div class="confirmation-card">
+        <!-- Appointment Details -->
+        <div class="section">
+            <div class="section-title">Appointment Information</div>
+            <div class="doctor-name">Dr. {{ appointment.doctor.user.first_name }} {{ appointment.doctor.user.last_name }}</div>
+            <div class="info-row">
+                <span class="info-label">Specialization</span>
+                <span class="info-value">{{ appointment.doctor.specialization }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Date</span>
+                <span class="info-value">{{ appointment.time_slot.date|date:"l, F d, Y" }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Time</span>
+                <span class="info-value">{{ appointment.time_slot.start_time|time:"H:i" }} - {{ appointment.time_slot.end_time|time:"H:i" }}</span>
+            </div>
+            {% if appointment.notes %}
+            <div class="info-row">
+                <span class="info-label">Notes</span>
+                <span class="info-value">{{ appointment.notes }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Warnings -->
+        <div class="section">
+            <div class="danger-box">
+                <strong>🔴 Important:</strong> Cancelling this appointment will free up the time slot for other patients to book.
+            </div>
+            <div class="warning-box">
+                <strong>ℹ️ Note:</strong> You can book another appointment with this doctor at any time.
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <a href="{% url 'patient_dashboard' %}" class="btn btn-secondary">Keep Appointment</a>
+            <form method="POST" style="flex: 1;">
+                {% csrf_token %}
+                <button type="submit" class="btn btn-danger" onclick="return confirm('This action cannot be undone. Are you absolutely sure?');">
+                    Yes, Cancel Appointment
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

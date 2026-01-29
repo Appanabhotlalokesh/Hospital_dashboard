@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block title %}Book Appointment{% endblock %}
+
+{% block content %}
+<style>
+    .book-container {
+        max-width: 600px;
+        margin: 0 auto;
+        padding: 40px 20px;
+    }
+
+    .back-link {
+        display: inline-block;
+        margin-bottom: 20px;
+        color: #0072ff;
+        text-decoration: none;
+        font-weight: 600;
+    }
+
+    .back-link:hover {
+        text-decoration: underline;
+    }
+
+    .page-header {
+        text-align: center;
+        margin-bottom: 40px;
+    }
+
+    .page-header h1 {
+        font-size: 28px;
+        color: #2c5364;
+        margin-bottom: 10px;
+    }
+
+    .confirmation-card {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        margin-bottom: 20px;
+    }
+
+    .section {
+        margin-bottom: 30px;
+        padding-bottom: 30px;
+        border-bottom: 1px solid #e0e0e0;
+    }
+
+    .section:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+
+    .section-title {
+        font-size: 14px;
+        color: #999;
+        text-transform: uppercase;
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 12px;
+    }
+
+    .info-label {
+        color: #666;
+        font-size: 14px;
+    }
+
+    .info-value {
+        color: #2c5364;
+        font-weight: 600;
+        font-size: 16px;
+    }
+
+    .doctor-header {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 10px;
+    }
+
+    .doctor-name {
+        font-size: 20px;
+        font-weight: 600;
+        color: #2c5364;
+    }
+
+    .doctor-spec {
+        color: #0072ff;
+        font-size: 14px;
+        font-weight: 500;
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    label {
+        display: block;
+        margin-bottom: 8px;
+        color: #333;
+        font-weight: 500;
+        font-size: 14px;
+    }
+
+    textarea {
+        width: 100%;
+        padding: 12px 15px;
+        border: 2px solid #e0e0e0;
+        border-radius: 8px;
+        font-family: 'Poppins', sans-serif;
+        font-size: 14px;
+        transition: border-color 0.3s;
+        resize: vertical;
+        min-height: 100px;
+    }
+
+    textarea:focus {
+        outline: none;
+        border-color: #0072ff;
+    }
+
+    .actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.3s;
+        text-decoration: none;
+        display: block;
+        text-align: center;
+    }
+
+    .btn-primary {
+        background: #0072ff;
+        color: white;
+    }
+
+    .btn-primary:hover {
+        background: #0059cc;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 114, 255, 0.3);
+    }
+
+    .btn-secondary {
+        background: #e0e0e0;
+        color: #666;
+    }
+
+    .btn-secondary:hover {
+        background: #d0d0d0;
+    }
+
+    .warning-box {
+        background: #fff3cd;
+        border: 1px solid #ffc107;
+        border-radius: 8px;
+        padding: 15px;
+        margin-bottom: 20px;
+        color: #856404;
+        font-size: 14px;
+    }
+</style>
+
+<div class="book-container">
+    <a href="{% url 'view_time_slots' doctor.id %}" class="back-link">← Back to Time Slots</a>
+
+    <div class="page-header">
+        <h1>Confirm Your Appointment</h1>
+        <p>Review the details and confirm your booking</p>
+    </div>
+
+    <div class="confirmation-card">
+        <!-- Doctor Information -->
+        <div class="section">
+            <div class="section-title">Doctor Information</div>
+            <div class="doctor-header">
+                <div>
+                    <div class="doctor-name">Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}</div>
+                    <div class="doctor-spec">{{ doctor.specialization }}</div>
+                </div>
+            </div>
+            {% if doctor.experience_years %}
+            <div class="info-row">
+                <span class="info-label">Experience</span>
+                <span class="info-value">{{ doctor.experience_years }}+ Years</span>
+            </div>
+            {% endif %}
+            {% if doctor.phone %}
+            <div class="info-row">
+                <span class="info-label">Contact</span>
+                <span class="info-value">{{ doctor.phone }}</span>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Appointment Details -->
+        <div class="section">
+            <div class="section-title">Appointment Details</div>
+            <div class="info-row">
+                <span class="info-label">Date</span>
+                <span class="info-value">{{ slot.date|date:"l, F d, Y" }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Time</span>
+                <span class="info-value">{{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">Duration</span>
+                <span class="info-value">{{ slot.duration_minutes }} minutes</span>
+            </div>
+        </div>
+
+        <!-- Additional Notes -->
+        <div class="section">
+            <div class="section-title">Additional Information</div>
+            <form method="POST">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="notes">Notes (Optional)</label>
+                    <textarea
+                        name="notes"
+                        id="notes"
+                        placeholder="Add any notes about your appointment (e.g., symptoms, concerns, allergies)"
+                    ></textarea>
+                </div>
+
+                <div class="warning-box">
+                    ⚠️ Once you confirm this booking, the time slot will be blocked and unavailable for other patients.
+                </div>
+
+                <div class="actions">
+                    <a href="{% url 'view_time_slots' doctor.id %}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to book this appointment?');">
+                        Confirm Booking
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

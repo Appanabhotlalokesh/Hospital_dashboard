@@ -1,0 +1,19 @@
+{% autoescape off %}
+Hello {{ patient_name }},
+
+Your appointment has been confirmed with Dr. {{ doctor_name }}.
+
+Appointment Details:
+- Date: {{ appointment_date|date:"l, F j, Y" }}
+- Time: {{ appointment_time }}
+{% if appointment_notes %}
+- Notes: {{ appointment_notes }}
+{% endif %}
+
+Please arrive 10 minutes before your scheduled time.
+
+If you need to cancel or reschedule, please contact us as soon as possible.
+
+Best regards,
+Hospital Administration
+{% endautoescape %}

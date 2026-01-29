@@ -1,0 +1,14 @@
+{% autoescape off %}
+Hello {{ patient_name }},
+
+This is a reminder about your upcoming appointment with Dr. {{ doctor_name }}.
+
+Appointment Details:
+- Date: {{ appointment_date|date:"l, F j, Y" }}
+- Time: {{ appointment_time }}
+
+Please arrive 10 minutes before your scheduled time.
+
+Thank you,
+Hospital Administration
+{% endautoescape %}

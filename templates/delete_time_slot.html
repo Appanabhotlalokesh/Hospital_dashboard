@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .confirm-container {
+        max-width: 500px;
+        margin: 50px auto;
+        background: white;
+        padding: 40px;
+        border-radius: 12px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+        text-align: center;
+    }
+
+    .confirm-header {
+        margin-bottom: 30px;
+    }
+
+    .confirm-icon {
+        font-size: 48px;
+        margin-bottom: 15px;
+        opacity: 0.8;
+    }
+
+    .confirm-header h1 {
+        color: #dc3545;
+        font-size: 28px;
+        margin: 15px 0 10px 0;
+    }
+
+    .confirm-header p {
+        color: #999;
+        margin: 0;
+        font-size: 14px;
+    }
+
+    .slot-details {
+        background: #f8f9fa;
+        padding: 20px;
+        border-radius: 8px;
+        margin: 30px 0;
+        border-left: 4px solid #dc3545;
+        text-align: left;
+    }
+
+    .slot-details p {
+        margin: 10px 0;
+        color: #333;
+    }
+
+    .slot-details strong {
+        color: #2c5364;
+    }
+
+    .warning-message {
+        background: #fff3cd;
+        border-left: 4px solid #ffc107;
+        padding: 15px;
+        border-radius: 4px;
+        margin: 20px 0;
+        color: #856404;
+        font-size: 14px;
+    }
+
+    .form-actions {
+        display: flex;
+        gap: 10px;
+        margin-top: 30px;
+    }
+
+    .btn {
+        flex: 1;
+        padding: 12px 20px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        font-weight: 600;
+        font-size: 15px;
+        transition: all 0.3s ease;
+        text-decoration: none;
+        display: inline-block;
+        text-align: center;
+    }
+
+    .btn-danger {
+        background: #dc3545;
+        color: white;
+    }
+
+    .btn-danger:hover {
+        background: #c82333;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 20px rgba(220, 53, 69, 0.2);
+    }
+
+    .btn-secondary {
+        background: #6c757d;
+        color: white;
+    }
+
+    .btn-secondary:hover {
+        background: #5a6268;
+    }
+</style>
+
+<div class="confirm-container">
+    <div class="confirm-header">
+        <div class="confirm-icon">⚠️</div>
+        <h1>Delete Time Slot?</h1>
+        <p>This action cannot be undone</p>
+    </div>
+
+    <div class="slot-details">
+        <p><strong>Slot Details:</strong></p>
+        <p>📅 <strong>Date:</strong> {{ slot.date|date:"l, F j, Y" }}</p>
+        <p>⏰ <strong>Time:</strong> {{ slot.start_time|time:"H:i" }} - {{ slot.end_time|time:"H:i" }}</p>
+        <p>⏱️ <strong>Duration:</strong> {{ slot.duration_minutes }} minutes</p>
+    </div>
+
+    <div class="warning-message">
+        <strong>Warning:</strong> This time slot will be permanently deleted from the system. Patients who have booked this slot will be notified.
+    </div>
+
+    <form method="POST">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">Confirm Delete</button>
+            <a href="{% url 'doctor_dashboard' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

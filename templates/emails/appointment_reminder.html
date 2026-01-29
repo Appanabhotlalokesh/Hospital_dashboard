@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background-color: #28a745; color: white; padding: 20px; text-align: center; }
+        .content { padding: 20px; background-color: #f9f9f9; }
+        .details { margin: 20px 0; padding: 15px; background-color: white; border-left: 4px solid #28a745; }
+        .footer { text-align: center; margin-top: 20px; color: #666; font-size: 12px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Appointment Reminder</h1>
+        </div>
+        <div class="content">
+            <p>Hello <strong>{{ patient_name }}</strong>,</p>
+            <p>This is a reminder about your upcoming appointment with <strong>Dr. {{ doctor_name }}</strong>.</p>
+            
+            <div class="details">
+                <h3>Appointment Details:</h3>
+                <p><strong>Date:</strong> {{ appointment_date|date:"l, F j, Y" }}</p>
+                <p><strong>Time:</strong> {{ appointment_time }}</p>
+            </div>
+            
+            <p>Please arrive 10 minutes before your scheduled time.</p>
+            
+            <div class="footer">
+                <p>&copy; 2026 Hospital Administration. All rights reserved.</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

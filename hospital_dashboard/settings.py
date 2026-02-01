@@ -27,7 +27,7 @@ for k, v in env.items():
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG', 'True') == 'True'
+DEBUG='True'
 
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
 
@@ -165,7 +165,7 @@ LOGGING = {
         'level': 'INFO',
     },
     'loggers': {
-        'django': {
+        'django': { 
             'handlers': ['console', 'file'],
             'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
             'propagate': False,
@@ -182,3 +182,6 @@ LOGGING = {
         },
     },
 }
+
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+DEFAULT_FROM_EMAIL = "hospitaldashboard@test.com"

@@ -10,6 +10,7 @@ class DoctorProfile(models.Model):
     phone = models.CharField(max_length=15, blank=True)
     experience_years = models.IntegerField(default=0)
     bio = models.TextField(blank=True)
+    profile_image = models.ImageField(upload_to='doctor_profiles/', blank=True, null=True)
     is_available = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

@@ -3,6 +3,8 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db import transaction
 from datetime import datetime
+import json
+from django.urls import reverse
 
 from .models import PatientProfile, Appointment
 from doctors.models import DoctorProfile, TimeSlot
@@ -42,11 +44,25 @@ def view_doctors(request):
 
     patient, _ = PatientProfile.objects.get_or_create(user=request.user)
 
+    # Support simple search/filter via GET parameter `q` or `specialization`
+    q = request.GET.get('q') or request.GET.get('specialization') or ''
+
     doctors = DoctorProfile.objects.filter(is_available=True)
+
+    if q:
+        from django.db.models import Q
+        doctors = doctors.filter(
+            Q(user__first_name__icontains=q) |
+            Q(user__last_name__icontains=q) |
+            Q(specialization__icontains=q)
+        )
+
+    doctors = doctors.order_by('-experience_years', 'user__first_name')
 
     return render(request, "view_doctors.html", {
         "patient": patient,
-        "doctors": doctors
+        "doctors": doctors,
+        "specialization_filter": q
     })
 
 
@@ -176,3 +192,38 @@ def add_to_google_calendar(request, appointment_id):
         messages.error(request, "Google Calendar sync failed")
 
     return redirect("patient_dashboard")
+
+
+# ---------------------------
+# APPOINTMENTS CALENDAR
+# ---------------------------
+
+
+@login_required(login_url='login_page')
+def appointments_calendar(request):
+    """Render a calendar view (FullCalendar) with the patient's confirmed appointments."""
+    patient, _ = PatientProfile.objects.get_or_create(user=request.user)
+
+    appointments = Appointment.objects.filter(patient=patient, status='confirmed').select_related('doctor', 'time_slot')
+
+    events = []
+    for a in appointments:
+        ts = a.time_slot
+        start_dt = datetime.combine(ts.date, ts.start_time)
+        end_dt = datetime.combine(ts.date, ts.end_time)
+        title = f"Dr. {a.doctor.user.first_name} {a.doctor.user.last_name}"
+        events.append({
+            "id": a.id,
+            "title": title,
+            "start": start_dt.isoformat(),
+            "end": end_dt.isoformat(),
+            "status": a.status,
+            "doctor_id": a.doctor.id,
+        })
+
+    events_json = json.dumps(events)
+
+    return render(request, 'appointments_calendar.html', {
+        'events_json': events_json,
+        'patient': patient
+    })

@@ -212,7 +212,16 @@
         <div class="doctors-grid">
             {% for doctor in doctors %}
             <div class="doctor-card">
-                <div class="doctor-header">
+                <div class="doctor-header d-flex flex-column align-items-center">
+                    {% if doctor.profile_image %}
+                        <img src="{{ doctor.profile_image.url }}" alt="Dr. {{ doctor.user.get_full_name }}" style="width:72px; height:72px; border-radius:50%; object-fit:cover;" />
+                    {% else %}
+                        <div class="avatar-circle mb-2" style="width:72px; height:72px; border-radius:50%; background:rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-weight:700; font-size:20px;">
+                            {% with fn=doctor.user.first_name|default:"" ln=doctor.user.last_name|default:"" %}
+                                {{ fn|slice:":1"|upper }}{{ ln|slice:":1"|upper }}
+                            {% endwith %}
+                        </div>
+                    {% endif %}
                     <div class="doctor-name">Dr. {{ doctor.user.first_name }} {{ doctor.user.last_name }}</div>
                     <div class="doctor-specialization">{{ doctor.specialization }}</div>
                 </div>
